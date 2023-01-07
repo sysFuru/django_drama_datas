@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="welcome">
+    <h1 class="title">ドラマデータベース</h1>
+    <p class="subtitle">あなたの見たドラマを登録しましょう</p>
+    <a class="btn btn-primary" href="{% url 'drama_data_new' %}">ドラマデータを登録しましょう</a>
+</div>
+
+{% if drama_datas %}
+<table class="table">
+    <thead>
+    <tr>
+        <th>タイトル</th>
+        <th>区分</th>
+        <th>制作年</th>
+        <th>制作会社</th>
+        <th>主演</th>
+        <th>登録日</th>
+        <th>登録者</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for drama_data in drama_datas %}
+    <tr>
+        <th><a href="{% url 'drama_data_detail' drama_data.id %}">{{ drama_data.title }}</a></th>
+        <th>
+            {% if drama_data.patern == 1 %} 連続
+            {% else %} 単発
+            {% endif %}
+        </th>
+        <th>{{ drama_data.year }}</th>
+        <th>{{ drama_data.company }}</th>
+        <th>
+        {% for cast in casts %}
+        {% if cast.role == 1 and cast.title.id == drama_data.id %}
+        {{ cast.name }}
+        {% endif %}
+        {% endfor %}
+        </th>
+        <th>{{ drama_data.created_at }}</th>
+        <th>{{ drama_data.created_by.username }}</th>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+<p>ドラマデータはまだ登録されていません。</p>
+{% endif %}
+{% endblock %}

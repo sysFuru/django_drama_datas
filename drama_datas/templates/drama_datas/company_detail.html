@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load pygmentize %}
+
+{% block extraheader %}
+<style>{% pygments_css %}</style>
+{% endblock %}
+
+{% block main %}
+<h2>{{ company.name }}</h2>
+
+<div class="snippet-date">
+    投稿日: {{ company.created_at|date:"DATETIME_FORMAT" }}
+    {% if user.is_authenticated and company.created_by_id == user.id %}
+    <a href="{% url 'company_edit' company.id %}">編集</a>
+    {% endif %}
+</div>
+
+<p>{{ company.memo }}</p>
+{% endblock %}

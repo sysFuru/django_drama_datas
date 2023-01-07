@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load pygmentize %}
+
+{% block extraheader %}
+<style>{% pygments_css %}</style>
+{% endblock %}
+
+{% block main %}
+<h2>{{ drama_data.title }}</h2>
+<h5>{{ drama_data.company }} / {{ drama_data.year }}年</h5>
+<p> 投稿日: {{ drama_data.created_at|date:"DATETIME_FORMAT" }}</p>
+<div class="snippet-date">
+    <table>
+        <tr>
+            {% if user.is_authenticated and drama_data.created_by_id == user.id %}
+            <th><a class="btn btn-primary" href="{% url 'drama_data_edit' drama_data.id %}">編集</a></th>
+            <form method="post" action="{% url 'drama_data_delete' drama_data.id %}">
+                {% csrf_token %}
+                <th><button class="btn btn-danger" type="submit" onclick='return confirm("本当に削除しますか？");'>削除</button></th>
+            </form>
+            <th>
+                <a class="btn btn-warning" href="{% url 'cast_new' drama_data.id %}" role="button">キャスト追加</a></button>
+            </th>
+            {% endif %}
+        </tr>
+    </table>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <p><b>主演</b></p>
+        {% for cast in casts %}
+        {% if cast.role == 1 %}
+        <p>{{ cast.name }}</p> 
+        {% endif %}   
+        {% endfor %}
+        <p><b>キャスト</b></p>
+        {% for cast in casts %}
+        {% if cast.role != 1 %}
+        <p>{{ cast.name }}</p> 
+        {% endif %}   
+        {% endfor %}
+    </div>
+    <div class="col-lg-6">
+        <p><b>原作</b></p>
+        <p><b>演出</b></p>
+        <p><b>プロデュース</b></p>
+        <p><b>音楽</b></p>
+        <p><b>主題歌</b></p>
+    </div>
+</div>
+<h5 style="margin-top: 30px;">メモ</h5>
+<p>{{ drama_data.memo }}</p>
+{% endblock %}
