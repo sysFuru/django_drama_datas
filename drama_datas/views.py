@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
-from drama_datas.forms import DramaDataForm, CompanyForm, CastForm
+from drama_datas.forms import DramaDataForm, CompanyForm, CastForm, ActorForm
 from django.views.decorators.http import require_safe, require_http_methods
 
 from drama_datas.models import DramaData, Company, Cast, Actor
@@ -15,15 +15,6 @@ def top(request):
     
     context = {"drama_datas": drama_datas, "casts": casts}
     return render(request, "drama_datas/top.html", context)
-    #return HttpResponse(request, "drama_datas/top.html")
-
-@require_safe
-def all_actors(request):
-    actors = Actor.objects.all()
-    #drama_datas = Cast.objects.filter(role=1)#.select_related('title')
-    
-    context = {"actors": actors}
-    return render(request, "drama_datas/all_actors.html", context)
     #return HttpResponse(request, "drama_datas/top.html")
 
 @login_required
@@ -43,6 +34,7 @@ def drama_data_new(request):
     return render(request, "drama_datas/drama_data_new.html", {'form': form})
 
     # return HttpResponse('スニペットの登録')
+
 
 @login_required
 @require_http_methods(["GET", "POST", "HEAD"])
@@ -77,6 +69,58 @@ def drama_data_detail(request, drama_data_id):
     return render(request, 'drama_datas/drama_data_detail.html', {'drama_data': drama_data, 'casts': casts})
     #return HttpResponse('スニペットの詳細閲覧')
 
+@require_safe
+def all_actors(request):
+    actors = Actor.objects.all()
+    #drama_datas = Cast.objects.filter(role=1)#.select_related('title')
+    
+    context = {"actors": actors}
+    return render(request, "drama_datas/all_actors.html", context)
+    #return HttpResponse(request, "drama_datas/top.html")
+
+@login_required
+@require_http_methods(["GET", "POST", "HEAD"])
+def actor_new(request):
+    page_name = "俳優登録"
+
+    if request.method == 'POST':
+        form = ActorForm(request.POST)
+        if form.is_valid():
+            actor = form.save(commit=False)
+            actor.created_by = request.user
+            actor.save()
+
+            drama_datas = DramaData.objects.all()
+            casts = Cast.objects.all()        
+            context = {"drama_datas": drama_datas, "casts": casts}
+            return render(request, "drama_datas/top.html", context)
+            #return redirect(drama_data_detail, actor_id=drama_data.pk)
+            #return redirect(drama_data_detail, actor_id=drama_data.pk)
+    
+    else:
+        form = ActorForm()
+
+    return render(request, "drama_datas/form_new.html", {'page_name': page_name, 'form': form})
+
+
+@login_required
+@require_http_methods(["GET", "POST", "HEAD"])
+def actor_edit(request, actor_id):
+    page_name = "俳優データ編集"
+    actor = get_object_or_404(Actor, pk=actor_id)
+    # if actor.created_by_id != request.user.id:
+    #     return HttpResponseForbidden("この俳優データの編集は許可されていません")
+
+    if request.method == "POST":
+        form = ActorForm(request.POST, instance=actor)
+        if form.is_valid():
+            form.save()
+            return redirect('all_actors')
+    
+    else:
+        form = ActorForm(instance=actor)
+    
+    return render(request, 'drama_datas/form_edit.html', {'page_name': page_name, 'form': form})
 
 @login_required
 @require_http_methods(["GET", "POST", "HEAD"])
