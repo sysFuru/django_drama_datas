@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1>会社 一覧</h1>
+<a class="btn btn-primary" href="{% url 'company_new' %}" role="button">追加</a>
+{% if companies %}
+<table class="table">
+    <thead>
+    <tr>
+        <th>会社名</th>
+        <th>国名</th>
+        <th>メモ</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for company in companies %}
+    <tr>
+        <th>{{ company.name }}</th>
+        <th>{{ company.country }}</th>
+        <th>{{ company.memo }}</th>
+        <!-- ボタン・リンククリック後に表示される画面の内容 -->
+        <th>
+            <a class="btn btn-primary" href="#" role="button">編集</a>
+        </th>
+    </tr>
+    
+    {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+<p>俳優のデータはまだ登録されていません。</p>
+{% endif %}
+{% endblock %}

@@ -3,7 +3,7 @@
 {% block main %}
 <h1>俳優 一覧</h1>
 <a class="btn btn-primary" href="{% url 'actor_new' %}" role="button">追加</a>
-{% if actors %}
+{% if ziplist %}
 <table class="table">
     <thead>
     <tr>
@@ -11,11 +11,12 @@
         <th>出身地</th>
         <th>性別</th>
         <th>生年月日</th>
+        <th>年齢</th>
         <th></th>
     </tr>
     </thead>
     <tbody>
-    {% for actor in actors %}
+    {% for actor, age in ziplist %}
     <tr>
         <th>{{ actor.name }}</th>
         <th>{{ actor.country }}</th>
@@ -26,6 +27,7 @@
             {% endif %}
         </th>
         <th>{{ actor.birthday }}</th>
+        <th>{{ age }}</th>
         <!-- ボタン・リンククリック後に表示される画面の内容 -->
         <th>
             <a class="btn btn-primary" href="{% url 'actor_edit' actor.id %}" role="button">編集</a>
