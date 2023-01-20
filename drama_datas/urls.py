@@ -11,4 +11,5 @@ urlpatterns = [
     path("company/<int:company_id>/", views.company_detail, name="company_detail"),
     path("company/<int:company_id>/edit/", views.company_edit, name="company_edit"),
     path("cast/<int:drama_data_id>/new/", views.cast_new, name="cast_new"),
+    path("all_actors/", views.all_actors, name="all_actors"),
 ]

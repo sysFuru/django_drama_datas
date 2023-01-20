@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from drama_datas.forms import DramaDataForm, CompanyForm, CastForm
 from django.views.decorators.http import require_safe, require_http_methods
 
-from drama_datas.models import DramaData, Company, Cast
+from drama_datas.models import DramaData, Company, Cast, Actor
 
 # Create your views here.
 @require_safe
@@ -15,6 +15,15 @@ def top(request):
     
     context = {"drama_datas": drama_datas, "casts": casts}
     return render(request, "drama_datas/top.html", context)
+    #return HttpResponse(request, "drama_datas/top.html")
+
+@require_safe
+def all_actors(request):
+    actors = Actor.objects.all()
+    #drama_datas = Cast.objects.filter(role=1)#.select_related('title')
+    
+    context = {"actors": actors}
+    return render(request, "drama_datas/all_actors.html", context)
     #return HttpResponse(request, "drama_datas/top.html")
 
 @login_required

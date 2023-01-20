@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1>俳優 一覧</h1>
+{% if actors %}
+<table class="table">
+    <thead>
+    <tr>
+        <th>氏名</th>
+        <th>出身地</th>
+        <th>性別</th>
+        <th>生年月日</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for actor in actors %}
+    <tr>
+        <th>{{ actor.name }}</th>
+        <th>{{ actor.country }}</th>
+        <th>
+            {% if actor.sex == 1 %} 男
+            {% elif actor.sex == 2 %} 女
+            {% else %} その他
+            {% endif %}
+        </th>
+        <th>{{ actor.birthday }}</th>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+<p>俳優のデータはまだ登録されていません。</p>
+{% endif %}
+{% endblock %}
