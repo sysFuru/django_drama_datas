@@ -25,7 +25,7 @@ class Actor(models.Model):
     #sex = models.IntegerField('性別',blank=True)
     SEX = ((1,'男'),(2,'女'),(3,'その他'))
     sex = models.IntegerField('性別',default=1,choices=SEX,blank=True)
-    birthday = models.DateField('生年月日',blank=True)
+    birthday = models.DateField('生年月日',null=True, blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name="投稿者",

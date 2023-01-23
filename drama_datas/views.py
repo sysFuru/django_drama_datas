@@ -6,10 +6,12 @@ from django.views.decorators.http import require_safe, require_http_methods
 
 from drama_datas.models import DramaData, Company, Cast, Actor
 
+import datetime
+
 # Create your views here.
 @require_safe
 def top(request):
-    drama_datas = DramaData.objects.all()
+    drama_datas = DramaData.objects.order_by('year', 'title')
     #drama_datas = Cast.objects.filter(role=1)#.select_related('title')
     casts = Cast.objects.all()
     
@@ -71,10 +73,21 @@ def drama_data_detail(request, drama_data_id):
 
 @require_safe
 def all_actors(request):
-    actors = Actor.objects.all()
+    actors = Actor.objects.order_by("birthday")
     #drama_datas = Cast.objects.filter(role=1)#.select_related('title')
-    
-    context = {"actors": actors}
+    #print(actors)
+
+    ages = []
+    for actor in actors:
+        if actor.birthday:
+            #print(actor.birthday.year)
+            ages.append(age(actor.birthday.year, actor.birthday.month, actor.birthday.day))
+        else:
+            ages.append("")
+
+    ziplist = zip(actors, ages)
+    context = {"ziplist": ziplist}
+    #context = {"actors": actors, "ages":ages}
     return render(request, "drama_datas/all_actors.html", context)
     #return HttpResponse(request, "drama_datas/top.html")
 
@@ -90,13 +103,7 @@ def actor_new(request):
             actor.created_by = request.user
             actor.save()
 
-            drama_datas = DramaData.objects.all()
-            casts = Cast.objects.all()        
-            context = {"drama_datas": drama_datas, "casts": casts}
-            return render(request, "drama_datas/top.html", context)
-            #return redirect(drama_data_detail, actor_id=drama_data.pk)
-            #return redirect(drama_data_detail, actor_id=drama_data.pk)
-    
+        return redirect('all_actors')
     else:
         form = ActorForm()
 
@@ -121,6 +128,15 @@ def actor_edit(request, actor_id):
         form = ActorForm(instance=actor)
     
     return render(request, 'drama_datas/form_edit.html', {'page_name': page_name, 'form': form})
+
+@require_safe
+def all_companies(request):
+    companies = Company.objects.all()
+    #drama_datas = Cast.objects.filter(role=1)#.select_related('title')
+    
+    context = {"companies": companies}
+    return render(request, "drama_datas/all_companies.html", context)
+    #return HttpResponse(request, "drama_datas/top.html")
 
 @login_required
 @require_http_methods(["GET", "POST", "HEAD"])
@@ -186,3 +202,9 @@ def cast_new(request, drama_data_id):
         form = CastForm()
 
     return render(request, "drama_datas/form_new.html", {'page_name': page_name, 'form': form})
+
+
+def age(year, month, day):
+    today = datetime.date.today()
+    birthday = datetime.date(year, month, day)
+    return (int(today.strftime("%Y%m%d")) - int(birthday.strftime("%Y%m%d"))) // 10000
